@@ -1,6 +1,6 @@
 # Vera/Z-Wave API for .NET
 
-This is a .NET library for Vera device (*Mi Casa Verde Z-Wave box*).
+This is a .NET library for Vera device (*Mi Casa Verde Z-Wave box).
 
 [http://getvera.com/](http://getvera.com/)
 
@@ -14,7 +14,6 @@ using (VeraController vera = new VeraController(new VeraConnectionInfo("192.168.
     {
         Console.WriteLine("{0}: {1} ({2})", device.GetType().Name, device.Name, device.Room?.Name ?? "No room");
     }
-    Console.WriteLine("Closing ...");
 }
 ```
 
@@ -35,7 +34,7 @@ var vera = new VeraController(new VeraConnectionInfo("192.168.0.222"));
 vera.StartListener();
 ```
 
-The Vera controller exposed the following properties :
+The Vera controller has the following properties :
 - Sections
 - Rooms
 - Categories
@@ -43,7 +42,7 @@ The Vera controller exposed the following properties :
 - Devices
 - Others informations about the current data version, model, state, last update, etc...
 
-Each sections, rooms, categories, scenes and devices are VeraBaseObject witch implement the INotifyPropertyChanged to raise event when data change.
+Each sections, rooms, categories, scenes and devices are VeraBaseObject witch implement the INotifyPropertyChanged to raise event when data changes.
 
 ![ClassDiagram](Images/ClassDiagram.png)
 
@@ -69,7 +68,7 @@ To show the temperature of a sensor :
 
 ```csharp
 var bedroomSensor = controller.Devices.First(d => d.Name == "Bedroom Temperature Sensor");
-Console.WriteLine("{0} = {1}�{2}", bedroomSensor.Name, bedroomSensor.Temperature, controller.TemperatureUnit);
+Console.WriteLine("{0} = {1} = {2}", bedroomSensor.Name, bedroomSensor.Temperature, controller.TemperatureUnit);
 ```
 
 To run a scene :
