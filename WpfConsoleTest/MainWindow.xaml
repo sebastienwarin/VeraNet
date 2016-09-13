@@ -1,0 +1,115 @@
+﻿<Window x:Class="WpfConsoleTest.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:WpfConsoleTest"
+        xmlns:vera="clr-namespace:VeraNet.Objects.Devices;assembly=VeraNet"
+        xmlns:veraNet="clr-namespace:VeraNet;assembly=VeraNet"
+        xmlns:veraObjects="clr-namespace:VeraNet.Objects;assembly=VeraNet"
+        Title="MainWindow" Height="650" Width="925" Loaded="Window_Loaded" Closing="Window_Closing">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="200" />
+        </Grid.RowDefinitions>
+        
+        <ListBox Grid.Row="1" x:Name="lbMessages">
+            <ListBox.Resources>
+                <DataTemplate DataType="{x:Type veraNet:VeraDataReceivedEventArgs}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Foreground="Black" Text="DataReceived: "/>
+                        <TextBlock Foreground="Black" Text="{Binding Path=Date}" Margin="5,0"/>
+                        <TextBlock Foreground="Black" Text="Length: " Margin="5,0"/>
+                        <TextBlock Foreground="Black" Text="{Binding Path=Length}" Margin="5,0" />
+                        <TextBlock Foreground="Black" Text="Version: " Margin="5,0"/>
+                        <TextBlock Foreground="Black" Text="{Binding Path=DataVersion}" Margin="5,0" />
+                    </StackPanel>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type veraNet:VeraDataSentEventArgs}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Foreground="Black" Text="DataSent: "/>
+                        <TextBlock Foreground="Black" Text="{Binding Path=Date}" Margin="5,0"/>
+                        <TextBlock Foreground="Black" Text="URI: " Margin="5,0"/>
+                        <TextBlock Foreground="Black" Text="{Binding Path=Uri}" Margin="5,0" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.Resources>
+        </ListBox>
+
+        <StackPanel Grid.Column="0">
+            <TextBlock Text="Devices:"></TextBlock>
+            <ListBox x:Name="lbDevices" MouseDoubleClick="lbDevices_MouseDoubleClick">
+                <ListBox.Resources>
+                    <DataTemplate DataType="{x:Type vera:TemperatureSensor}">
+                        <StackPanel Orientation="Horizontal" Background="Violet">
+                            <TextBlock Foreground="Black" Text="{Binding Path=Name}"/>
+                            <TextBlock Foreground="Black" Text="{Binding Path=Temperature}" Margin="5,0" />
+                            <TextBlock Foreground="Yellow" Text="{Binding Path=LastUpdate}" Margin="5,0" />
+                        </StackPanel>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vera:HumiditySensor}">
+                        <StackPanel Orientation="Horizontal" Background="Violet">
+                            <TextBlock Foreground="Black" Text="{Binding Path=Name}"/>
+                            <TextBlock Foreground="Black" Text="{Binding Path=Humidity}" Margin="5,0" />
+                            <TextBlock Foreground="Yellow" Text="{Binding Path=LastUpdate}" Margin="5,0" />
+                        </StackPanel>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vera:PowerMeter}">
+                        <StackPanel Orientation="Horizontal" Background="Brown">
+                            <TextBlock Foreground="Black" Text="{Binding Path=Name}"/>
+                            <TextBlock Foreground="Black" Text="{Binding Path=Watts}" Margin="5,0" />
+                            <TextBlock Foreground="Yellow" Text="{Binding Path=LastUpdate}" Margin="5,0" />
+                        </StackPanel>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vera:Switch}">
+                        <StackPanel Orientation="Horizontal" Background="{Binding Path=Status, Converter={x:Static local:SwitchColorConverter.Instance}}">
+                            <TextBlock Foreground="Black" Text="{Binding Path=Name}"/>
+                            <TextBlock Foreground="Black" Text="{Binding Path=Watts}" Margin="5,0" />
+                            <TextBlock Foreground="Yellow" Text="{Binding Path=LastUpdate}" Margin="5,0" />
+                        </StackPanel>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vera:SecuritySensor}">
+                        <StackPanel Orientation="Horizontal" Background="{Binding Path=Tripped, Converter={x:Static local:SecurityColorConverter.Instance}}">
+                            <TextBlock Foreground="Black" Text="{Binding Path=Name}"/>
+                            <TextBlock Foreground="Yellow" Text="{Binding Path=LastUpdate}" Margin="5,0" />
+                        </StackPanel>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vera:DimmableLight}">
+                        <StackPanel Orientation="Horizontal" Background="{Binding Path=Status, Converter={x:Static local:SwitchColorConverter.Instance}}">
+                            <TextBlock Foreground="Black" Text="{Binding Path=Name}"/>
+                            <TextBlock Foreground="Black" Text="{Binding Path=Watts}" Margin="5,0" />
+                            <TextBlock Foreground="Yellow" Text="{Binding Path=LastUpdate}" Margin="5,0" />
+                            <Slider Margin="5,0" Width="150" Minimum="0" Maximum="100" Value="{Binding Path=Level, Mode=OneWay}" Tag="{Binding}" Thumb.DragCompleted="Slider_DragCompleted" ></Slider>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.Resources>
+            </ListBox>
+        </StackPanel>
+        <StackPanel Grid.Column="1">
+            <TreeView x:Name="tvHome">
+                <TreeView.ItemTemplate>
+                    <HierarchicalDataTemplate ItemsSource="{Binding Rooms}">
+                        <TextBlock Text="{Binding Name}" />
+                    </HierarchicalDataTemplate>
+                </TreeView.ItemTemplate>
+            </TreeView>
+            <TextBlock Text="Scenes:"></TextBlock>
+            <ListBox x:Name="lbScene" MouseDoubleClick="lbScene_MouseDoubleClick">
+                <ListBox.Resources>
+                    <DataTemplate DataType="{x:Type veraObjects:Scene}">
+                        <StackPanel Orientation="Horizontal" Background="{Binding Path=IsActive, Converter={x:Static local:SwitchColorConverter.Instance}}">
+                            <TextBlock Foreground="Black" Text="{Binding Path=Name}" />
+                            <TextBlock Foreground="Yellow" Text="{Binding Path=LastUpdate}" Margin="5,0" />
+                            <TextBlock Foreground="Yellow" Text="{Binding Path=State}" Margin="5,0" />
+                            <TextBlock Foreground="Yellow" Text="{Binding Path=Comment}" Margin="5,0" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.Resources>
+            </ListBox>           
+        </StackPanel>
+    </Grid>
+</Window>
