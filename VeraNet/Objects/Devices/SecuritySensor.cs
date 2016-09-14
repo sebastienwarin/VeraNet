@@ -50,8 +50,8 @@ namespace VeraNet.Objects.Devices
             base.InitializeProperties(values);
             this.Armed = (bool)(values["armed"].ToString() == "1");
             this.ArmedTripped = (bool)(values["armedtripped"].ToString() == "1");
-            this.Tripped = (bool)(values["tripped"].ToString() == "1");
-            this.LastTrip = this.GetDateTime(Convert.ToInt64(values["lasttrip"]));
+            this.Tripped = (bool)((values.ContainsKey("tripped") ? values["tripped"] : values["armedtripped"]).ToString() == "1");
+            this.LastTrip = values.ContainsKey("lasttrip") ? this.GetDateTime(Convert.ToInt64(values["lasttrip"])) : DateTime.Now;
         }
 
         internal override void UpdateProperties(Dictionary<string, object> values)
@@ -60,7 +60,7 @@ namespace VeraNet.Objects.Devices
             this.UpdateProperty(values, "armed", "Armed", (v) => { this.Armed = (bool)(v.ToString() == "1"); return true; });
             this.UpdateProperty(values, "armedtripped", "ArmedTripped", (v) => { this.ArmedTripped = (bool)(v.ToString() == "1"); return true; });
             this.UpdateProperty(values, "tripped", "Tripped", (v) => { this.Tripped = (bool)(v.ToString() == "1"); return true; });
-            this.UpdateProperty(values, "lasttrip", "LastTrip", (v) => { this.LastTrip = this.GetDateTime(Convert.ToInt64(v)); return true; });
+            this.UpdateProperty(values, "lasttrip", "LastTrip", (v) => { this.LastTrip = values.ContainsKey("lasttrip") ? this.GetDateTime(Convert.ToInt64(values["lasttrip"])) : DateTime.Now; return true; });
         }
     }
 }
