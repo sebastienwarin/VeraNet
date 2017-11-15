@@ -167,7 +167,7 @@ namespace VeraNet.Objects
                         {  "plugin", "zwave" }
                     })) as Dictionary<string, object>;
                 }
-                while ((jsonResponse == null || !jsonResponse.ContainsKey("status") || jsonResponse["status"].ToString() == "0" || jsonResponse["status"].ToString() == "1") && limit < 5);
+                while ((jsonResponse == null || !jsonResponse.ContainsKey("status") || jsonResponse["status"].ToString() == "0" || jsonResponse["status"].ToString() == "1" || jsonResponse["status"].ToString() == "7") && limit < 5);
                 return (jsonResponse != null && jsonResponse.ContainsKey("status") && jsonResponse["status"].ToString() == "4");
             }
             else

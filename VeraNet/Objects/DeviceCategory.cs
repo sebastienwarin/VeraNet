@@ -19,6 +19,8 @@ namespace VeraNet.Objects
         Switch = 3,
         // "urn:micasaverde-com:serviceId:SecuritySensor1"
         SecuritySensor = 4,
+        Thermostat = 5,
+        Doorlock = 7,
         // "urn:micasaverde-com:serviceId:WindowCovering1"
         WindowCovering = 8,
         // "urn:micasaverde-com:serviceId:SceneController1"
