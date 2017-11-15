@@ -6,14 +6,35 @@ using System.Text;
 namespace VeraNet.Objects.Devices
 {
     [VeraDevice(DeviceCategory.Thermostat)]
+    /// <summary>
+    /// Represent a Thermostat
+    /// </summary>
     public class Thermostat : PowerMeter
     {
+        /// <summary>
+        /// Termostats state
+        /// </summary>
         public ModeState Hvacstate { get; internal set; }
+        /// <summary>
+        /// Thermostats mode
+        /// </summary>
         public ModeTarget Mode { get; internal set; }
+        /// <summary>
+        /// Check if device is responding
+        /// </summary>
         public bool CommFailure { get; internal set; }
         public Double Setpoint { get; internal set; }
+        /// <summary>
+        /// Heat Temperature
+        /// </summary>
         public Double Heat { get; internal set; }
+        /// <summary>
+        /// Cool Temperature
+        /// </summary>
         public Double Cool { get; internal set; }
+        /// <summary>
+        /// Get temperature of thermostats
+        /// </summary>
         public Double Temperature { get; internal set; }
 
         internal override void InitializeProperties(Dictionary<string, object> values)
@@ -42,11 +63,21 @@ namespace VeraNet.Objects.Devices
             this.UpdateProperty(values, "cool", "Cool", (v) => { this.Cool = double.Parse(v.ToString(), System.Globalization.CultureInfo.InvariantCulture); return true; });
         }
 
+        /// <summary>
+        /// Set temperature
+        /// </summary>
+        /// <param name="temperature">Temperature</param>
+        /// <returns></returns>
         public bool SetTemperature(double temperature)
         {
             return this.SetActionAndWaitJob("urn:upnp-org:serviceId:TemperatureSetpoint1", "SetCurrentSetpoint", "NewCurrentSetpoint", temperature);
         }
 
+        /// <summary>
+        /// Set Thermostats mode
+        /// </summary>
+        /// <param name="modeTarget">Thermostats Mode</param>
+        /// <returns></returns>
         public bool SetModeTarget(String modeTarget)
         {
             return this.SetActionAndWaitJob("urn:upnp-org:serviceId:HVAC_UserOperatingMode1", "SetModeTarget", "NewModeTarget", modeTarget);
