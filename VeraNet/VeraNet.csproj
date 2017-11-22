@@ -43,6 +43,8 @@
   <ItemGroup>
     <Compile Include="Objects\Category.cs" />
     <Compile Include="Objects\Device.cs" />
+    <Compile Include="Objects\Devices\DoorLock.cs" />
+    <Compile Include="Objects\Devices\Thermostat.cs" />
     <Compile Include="Objects\Devices\WindowCovering.cs" />
     <Compile Include="Objects\VeraDeviceAttribute.cs" />
     <Compile Include="Objects\DeviceCategory.cs" />
