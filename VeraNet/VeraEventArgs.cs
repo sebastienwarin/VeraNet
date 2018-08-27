@@ -57,9 +57,31 @@ namespace VeraNet
     }
 
     /// <summary>
-    ///  Provides data when an error occcured.
+    /// Provides data when the house mode changes
     /// </summary>
-    public class VeraErrorOccurredEventArgs : EventArgs
+    /// <seealso cref="System.EventArgs" />
+    public class HouseModeChangedEventArgs : EventArgs
+    {
+        /// <summary>
+        /// Gets or sets the new mode.
+        /// </summary>
+        /// <value>
+        /// The new mode.
+        /// </value>
+        public VeraHouseMode NewMode { get; set; }
+        /// <summary>
+        /// Gets or sets the old mode.
+        /// </summary>
+        /// <value>
+        /// The old mode.
+        /// </value>
+        public VeraHouseMode OldMode { get; set; }
+    }
+
+        /// <summary>
+        ///  Provides data when an error occcured.
+        /// </summary>
+        public class VeraErrorOccurredEventArgs : EventArgs
     {
         /// <summary>
         /// Gets or sets the exception.

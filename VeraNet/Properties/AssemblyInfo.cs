@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Sebastien.warin.fr")]
 [assembly: AssemblyProduct("VeraNet")]
-[assembly: AssemblyCopyright("Copyright © 2012 Sebastien.warin.fr")]
+[assembly: AssemblyCopyright("Copyright © 2012-2018 Sebastien.warin.fr")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

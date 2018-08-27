@@ -22,6 +22,7 @@ namespace VeraNet
     /// <summary>
     /// Represent the Vera controller
     /// </summary>
+    /// <seealso cref="System.IDisposable" />
     public class VeraController : IDisposable
     {
         private const int REQUEST_INTERVAL_PAUSE_MS = 100;
@@ -53,6 +54,10 @@ namespace VeraNet
         /// Occurs when scene is updated.
         /// </summary>
         public event EventHandler<SceneUpdatedEventArgs> SceneUpdated;
+        /// <summary>
+        /// Occurs when the house mode is changed.
+        /// </summary>
+        public event EventHandler<HouseModeChangedEventArgs> HouseModeChanged;
 
         /// <summary>
         /// Gets a value indicating whether this controller is listening for changes.
@@ -89,28 +94,28 @@ namespace VeraNet
         /// <value>
         /// The Vera serial number.
         /// </value>
-        public string SerialNumber { get; set; }
+        public string SerialNumber { get; private set; }
         /// <summary>
         /// Gets or sets the Vera device version.
         /// </summary>
         /// <value>
         /// The Vera device version.
         /// </value>
-        public string Version { get; set; }
+        public string Version { get; private set; }
         /// <summary>
         /// Gets or sets the Vera model.
         /// </summary>
         /// <value>
         /// The Vera model.
         /// </value>
-        public string Model { get; set; }
+        public string Model { get; private set; }
         /// <summary>
         /// Gets or sets the temperature unit.
         /// </summary>
         /// <value>
         /// The temperature unit.
         /// </value>
-        public string TemperatureUnit { get; set; }
+        public string TemperatureUnit { get; private set; }
 
         /// <summary>
         /// Gets or sets the last update.
@@ -118,7 +123,7 @@ namespace VeraNet
         /// <value>
         /// The last update.
         /// </value>
-        public DateTime LastUpdate { get; set; }
+        public DateTime LastUpdate { get; private set; }
         /// <summary>
         /// Gets the current load time.
         /// </summary>
@@ -139,14 +144,21 @@ namespace VeraNet
         /// <value>
         /// The state of the current.
         /// </value>
-        public VeraState CurrentState { get; set; }
+        public VeraState CurrentState { get; private set; }
         /// <summary>
         /// Gets or sets the current comment.
         /// </summary>
         /// <value>
         /// The current comment.
         /// </value>
-        public string CurrentComment { get; set; }
+        public string CurrentComment { get; private set; }
+        /// <summary>
+        /// Gets or sets the house's mode.
+        /// </summary>
+        /// <value>
+        /// The house's mode.
+        /// </value>
+        public VeraHouseMode HouseMode { get; private set; }
 
         /// <summary>
         /// Gets the sections.
@@ -312,7 +324,7 @@ namespace VeraNet
                 throw new Exception("Unable to perform a full request when the listener is running. Call StopListener() before !");
             }
         }
-        
+
         internal string GetWebResponse(string uri, bool throwException = false)
         {
             try
@@ -349,6 +361,7 @@ namespace VeraNet
                 try
                 {
                     this.RequestVera();
+                    this.RequestHouseMode();
                     errorCount = 0;
                     Thread.Sleep(REQUEST_INTERVAL_PAUSE_MS);
                 }
@@ -368,6 +381,32 @@ namespace VeraNet
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Requests the current house mode.
+        /// </summary>
+        /// <returns></returns>
+        public VeraHouseMode RequestHouseMode()
+        {
+            VeraHouseMode houseMode = (VeraHouseMode)Convert.ToInt32(this.GetWebResponse(this.ConnectionInfo.ToString() + "/data_request?id=variableget&Variable=Mode"));
+            if (houseMode != this.HouseMode)
+            {
+                var eventArgs = new HouseModeChangedEventArgs { NewMode = houseMode, OldMode = this.HouseMode };
+                this.HouseMode = houseMode;
+                this.HouseModeChanged?.Invoke(this, eventArgs);
+            }
+            return houseMode;
+        }
+
+        /// <summary>
+        /// Sets the house mode.
+        /// </summary>
+        /// <param name="houseMode">The house mode.</param>
+        /// <returns></returns>
+        public bool SetHouseMode(VeraHouseMode houseMode)
+        {
+           return this.GetWebResponse(this.ConnectionInfo.ToString() + "/data_request?id=lu_action&serviceId=urn:micasaverde-com:serviceId:HomeAutomationGateway1&action=SetHouseMode&Mode=" + ((int)houseMode).ToString()).Contains("<OK>OK</OK>");
         }
 
         private void RequestVera()
@@ -422,7 +461,7 @@ namespace VeraNet
             }
             if (jsonResponse.ContainsKey("state"))
             {
-                this.CurrentState = StateUtils.GetStateFromCode(Convert.ToInt32(jsonResponse["state"]));
+                this.CurrentState = StateUtils.GetStateFromCode(Convert.ToInt32(jsonResponse["state"]));;
             }
             if (jsonResponse.ContainsKey("comment"))
             {
@@ -436,6 +475,13 @@ namespace VeraNet
             {
                 this.CurrentDataVersion = Convert.ToInt64(jsonResponse["dataversion"]);
             }
+            if (jsonResponse.ContainsKey("mode"))
+            {
+                this.HouseMode = (VeraHouseMode)Convert.ToInt32(jsonResponse["mode"]);
+            }
+
+            // Update OK
+            this.LastUpdate = DateTime.Now;
 
             // Raise DataReceived event
             if (this.DataReceived != null)
@@ -448,11 +494,8 @@ namespace VeraNet
                     RawData = strResponse
                 });
             }
-
-            // Update OK
-            this.LastUpdate = DateTime.Now;
         }
-        
+
         private void LoadVeraObjects<TObject>(Dictionary<string, object> jsonValues, string jsonKey, ObservableCollection<TObject> listToLoad, Func<Dictionary<string, object>, TObject> createObject = null) where TObject : VeraBaseObject, new()
         {
             if (jsonValues.ContainsKey(jsonKey))

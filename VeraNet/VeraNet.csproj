@@ -56,6 +56,7 @@
     <Compile Include="Objects\Devices\TemperatureSensor.cs" />
     <Compile Include="Objects\Scene.cs" />
     <Compile Include="Objects\Section.cs" />
+    <Compile Include="Objects\VeraHouseMode.cs" />
     <Compile Include="Objects\VeraState.cs" />
     <Compile Include="Objects\VeraBaseObject.cs" />
     <Compile Include="Objects\VeraInteractiveObject.cs" />
