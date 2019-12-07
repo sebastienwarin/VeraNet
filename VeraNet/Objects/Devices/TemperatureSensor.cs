@@ -26,7 +26,9 @@ namespace VeraNet.Objects.Devices
         internal override void InitializeProperties(Dictionary<string, object> values)
         {
             base.InitializeProperties(values);
-            this.Temperature = double.Parse(values["temperature"].ToString(), System.Globalization.CultureInfo.InvariantCulture);
+            this.Temperature = double.NaN;
+            if (values.ContainsKey("temperature"))
+                this.Temperature = double.Parse(values["temperature"].ToString(), System.Globalization.CultureInfo.InvariantCulture);
         }
 
         internal override void UpdateProperties(Dictionary<string, object> values)
